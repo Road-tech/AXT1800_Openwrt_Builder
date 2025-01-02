@@ -9,7 +9,7 @@ on:
       istore:
         description: 'istore'
         required: false
-        default: 'true'
+        default: 'false'
       docker:
         description: '是否编译docker'
         required: false
