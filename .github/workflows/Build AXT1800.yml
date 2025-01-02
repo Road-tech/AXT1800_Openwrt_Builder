@@ -1,4 +1,4 @@
-name: Build Openwrt
+name: Build AXT1800
 
 on:
   #schedule:
