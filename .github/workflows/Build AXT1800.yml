@@ -22,14 +22,7 @@ on:
         description: 'Openwrt版本'
         required: false
         default: 'v23.05.4'
-      tag2:
-        description: 'ImmortalWrt版本'
-        required: false
-        default: 'v23.05.4'
-      ssh:
-        description: 'SSH 连接到 Actions'
-        required: false
-        default: 'false'
+
 
 env:
   REPO_URL_AXT: https://github.com/m0eak/immortalwrt-ipq.git
@@ -82,27 +75,11 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        if [[ "${{ matrix.target }}" == "AXT-1800" ]]; then
-          REPO_URL=$REPO_URL_AXT
-          git clone --branch $REPO_BRANCH $REPO_URL openwrt
-          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-          cd openwrt 
-          git checkout ${{ github.event.inputs.kernel }}
-        fi
-        if [[ "${{ matrix.target }}" == "x86-Openwrt" ]]; then
-          REPO_URL=$REPO_URL_X86
-          git clone $REPO_URL -b $REPO_BRANCH openwrt
-          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-          cd openwrt
-          git checkout ${{ github.event.inputs.tag }}
-        fi
-        if [[ "${{ matrix.target }}" == "x86-immortalwrt" ]]; then
-          REPO_URL=$REPO_URL_IMM
-          git clone $REPO_URL -b openwrt-24.10 --single-branch openwrt
-          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-          cd openwrt
-          #git checkout ${{ github.event.inputs.tag2 }}
-        fi
+        REPO_URL=$REPO_URL_AXT
+        git clone --branch $REPO_BRANCH $REPO_URL openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        cd openwrt 
+        git checkout ${{ github.event.inputs.kernel }}
         echo "OPENWRT_PATH=$PWD" >> $GITHUB_ENV
 
     - name: 加载自定义源
@@ -152,13 +129,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         make defconfig
-
-    - name: SSH 连接到 Actions
-      uses: P3TERX/ssh2actions@v1.0.0
-      if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh != 'false') || contains(github.event.action, 'ssh')
-      env:
-        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
     # - name: 下载软件包
     #   id: package
